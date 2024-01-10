@@ -89,7 +89,7 @@ int main(int argc, char** argv)
   /* Variable declaration/allocation. */
   DATA_TYPE alpha;
   DATA_TYPE beta;
-  volatile DATA_TYPE C[NI][NJ];
+  volatile  DATA_TYPE C[NI][NJ];
   volatile DATA_TYPE A[NI][NK];
   volatile DATA_TYPE B[NK][NJ];
   /* Initialize array(s). */

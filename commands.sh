@@ -25,7 +25,8 @@ sed 's/DATA_TYPE POLYBENCH_2D(\([a-zA-Z]*\),\([A-Z]*\),\([A-Z]*\),[a-z]*,[a-z]*)
     | sed 's/POLYBENCH_DUMP.*//g' \
     | sed 's/POLYBENCH_ARRAY(\([_A-Za-z0-9]*\))/\1/g' \
     | sed '/^[[:space:]]*$/d' \
-    | sed 's/.*fprint.*//g' > $new_path
+    | sed 's/.*fprint.*//g' \ > $new_path
 
 gcc -I utilities/ $new_path -lm 2> /dev/null || echo "- Compilation error"
+./a.out || echo "- Execution error"
 rm -f a.out
