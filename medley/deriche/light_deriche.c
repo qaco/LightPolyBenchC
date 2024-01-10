@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* deriche.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "deriche.h"
+/* Array initialization. */
 static
 void init_array (int w, int h, DATA_TYPE* alpha,
 		 DATA_TYPE imgIn[W][H],
@@ -25,6 +29,8 @@ void init_array (int w, int h, DATA_TYPE* alpha,
      for (j = 0; j < h; j++)
 	imgIn[i][j] = (DATA_TYPE) ((313*i+991*j)%65536) / 65535.0f;
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int w, int h,
 		 DATA_TYPE imgOut[W][H])
@@ -36,6 +42,9 @@ void print_array(int w, int h,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
+/* Original code provided by Gael Deest */
 static
 void kernel_deriche(int w, int h, DATA_TYPE alpha,
        DATA_TYPE POLYBENCH_2D(imgIn, W, H, w, h),
@@ -118,17 +127,25 @@ void kernel_deriche(int w, int h, DATA_TYPE alpha,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int w = W;
   int h = H;
+  /* Variable declaration/allocation. */
   DATA_TYPE alpha;
   volatile DATA_TYPE imgIn[W][H];
   volatile DATA_TYPE imgOut[W][H];
   volatile DATA_TYPE y1[W][H];
   volatile DATA_TYPE y2[W][H];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_deriche (w, h, alpha, imgIn, imgOut, y1, y2);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(w, h, imgOut));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

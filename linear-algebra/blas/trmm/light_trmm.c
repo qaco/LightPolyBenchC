@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* trmm.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "trmm.h"
+/* Array initialization. */
 static
 void init_array(int m, int n,
 		DATA_TYPE *alpha,
@@ -31,6 +35,8 @@ void init_array(int m, int n,
     }
  }
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int m, int n,
 		 DATA_TYPE B[M][N])
@@ -42,6 +48,8 @@ void print_array(int m, int n,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_trmm(int m, int n,
 		 DATA_TYPE alpha,
@@ -68,15 +76,23 @@ void kernel_trmm(int m, int n,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int m = M;
   int n = N;
+  /* Variable declaration/allocation. */
   DATA_TYPE alpha;
   volatile DATA_TYPE A[M][M];
   volatile DATA_TYPE B[M][N];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_trmm (m, n, alpha, A, B);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(m, n, B));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

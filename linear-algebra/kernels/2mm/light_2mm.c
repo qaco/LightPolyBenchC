@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* 2mm.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "2mm.h"
+/* Array initialization. */
 static
 void init_array(int ni, int nj, int nk, int nl,
 		DATA_TYPE *alpha,
@@ -38,6 +42,8 @@ void init_array(int ni, int nj, int nk, int nl,
     for (j = 0; j < nl; j++)
       D[i][j] = (DATA_TYPE) (i*(j+2) % nk) / nk;
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int ni, int nl,
 		 DATA_TYPE D[NI][NL])
@@ -49,6 +55,8 @@ void print_array(int ni, int nl,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_2mm(int ni, int nj, int nk, int nl,
 		DATA_TYPE alpha,
@@ -80,10 +88,12 @@ void kernel_2mm(int ni, int nj, int nk, int nl,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int ni = NI;
   int nj = NJ;
   int nk = NK;
   int nl = NL;
+  /* Variable declaration/allocation. */
   DATA_TYPE alpha;
   DATA_TYPE beta;
   volatile DATA_TYPE tmp[NI][NJ];
@@ -91,7 +101,10 @@ int main(int argc, char** argv)
   volatile DATA_TYPE B[NK][NJ];
   volatile DATA_TYPE C[NJ][NL];
   volatile DATA_TYPE D[NI][NL];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_2mm (ni, nj, nk, nl,
 	      alpha, beta,
 	      tmp,
@@ -99,8 +112,11 @@ int main(int argc, char** argv)
 	      B,
 	      C,
 	      D);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(ni, nl,  D));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* mvt.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "mvt.h"
+/* Array initialization. */
 static
 void init_array(int n,
 		DATA_TYPE x1[N],
@@ -32,6 +36,8 @@ void init_array(int n,
 	A[i][j] = (DATA_TYPE) (i*j % n) / n;
     }
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int n,
 		 DATA_TYPE x1[N],
@@ -47,6 +53,8 @@ void print_array(int n,
 
   }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_mvt(int n,
 		DATA_TYPE x1[N],
@@ -67,21 +75,29 @@ void kernel_mvt(int n,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int n = N;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE A[N][N];
   volatile DATA_TYPE x1[N];
   volatile DATA_TYPE x2[N];
   volatile DATA_TYPE y_1[N];
   volatile DATA_TYPE y_2[N];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_mvt (n,
 	      x1,
 	      x2,
 	      y_1,
 	      y_2,
 	      A);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(n, x1, x2));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

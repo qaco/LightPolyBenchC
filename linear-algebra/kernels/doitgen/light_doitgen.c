@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* doitgen.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "doitgen.h"
+/* Array initialization. */
 static
 void init_array(int nr, int nq, int np,
 		DATA_TYPE A[NR][NQ][NP],
@@ -27,6 +31,8 @@ void init_array(int nr, int nq, int np,
     for (j = 0; j < np; j++)
       C4[i][j] = (DATA_TYPE) (i*j % np) / np;
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int nr, int nq, int np,
 		 DATA_TYPE A[NR][NQ][NP])
@@ -39,6 +45,8 @@ void print_array(int nr, int nq, int np,
 
       }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 void kernel_doitgen(int nr, int nq, int np,
 		    DATA_TYPE A[NR][NQ][NP],
 		    DATA_TYPE POLYBENCH_2D(C4,NP,NP,np,np),
@@ -60,19 +68,27 @@ void kernel_doitgen(int nr, int nq, int np,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int nr = NR;
   int nq = NQ;
   int np = NP;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE A[NR][NQ][NP];
   volatile DATA_TYPE sum[NP];
   volatile DATA_TYPE C4[NP][NP];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_doitgen (nr, nq, np,
 		  A,
 		  C4,
 		  sum);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(nr, nq, np,  A));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

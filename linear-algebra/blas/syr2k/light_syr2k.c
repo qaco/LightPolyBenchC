@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* syr2k.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "syr2k.h"
+/* Array initialization. */
 static
 void init_array(int n, int m,
 		DATA_TYPE *alpha,
@@ -34,6 +38,8 @@ void init_array(int n, int m,
       C[i][j] = (DATA_TYPE) ((i*j+3)%n) / m;
     }
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int n,
 		 DATA_TYPE C[N][N])
@@ -45,6 +51,8 @@ void print_array(int n,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_syr2k(int n, int m,
 		  DATA_TYPE alpha,
@@ -74,21 +82,29 @@ void kernel_syr2k(int n, int m,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int n = N;
   int m = M;
+  /* Variable declaration/allocation. */
   DATA_TYPE alpha;
   DATA_TYPE beta;
   volatile DATA_TYPE C[N][N];
   volatile DATA_TYPE A[N][M];
   volatile DATA_TYPE B[N][M];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_syr2k (n, m,
 		alpha, beta,
 		C,
 		A,
 		B);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(n, C));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

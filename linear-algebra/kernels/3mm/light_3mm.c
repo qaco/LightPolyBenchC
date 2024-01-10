@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* 3mm.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "3mm.h"
+/* Array initialization. */
 static
 void init_array(int ni, int nj, int nk, int nl, int nm,
 		DATA_TYPE A[NI][NK],
@@ -34,6 +38,8 @@ void init_array(int ni, int nj, int nk, int nl, int nm,
     for (j = 0; j < nl; j++)
       D[i][j] = (DATA_TYPE) ((i*(j+2)+2) % nk) / (5*nk);
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int ni, int nl,
 		 DATA_TYPE G[NI][NL])
@@ -45,6 +51,8 @@ void print_array(int ni, int nl,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 		DATA_TYPE E[NI][NJ],
@@ -85,11 +93,13 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int ni = NI;
   int nj = NJ;
   int nk = NK;
   int nl = NL;
   int nm = NM;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE E[NI][NJ];
   volatile DATA_TYPE A[NI][NK];
   volatile DATA_TYPE B[NK][NJ];
@@ -97,7 +107,10 @@ int main(int argc, char** argv)
   volatile DATA_TYPE C[NJ][NM];
   volatile DATA_TYPE D[NM][NL];
   volatile DATA_TYPE G[NI][NL];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_3mm (ni, nj, nk, nl, nm,
 	      E,
 	      A,
@@ -106,8 +119,11 @@ int main(int argc, char** argv)
 	      C,
 	      D,
 	      G);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(ni, nl,  G));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

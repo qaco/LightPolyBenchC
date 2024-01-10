@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* gramschmidt.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "gramschmidt.h"
+/* Array initialization. */
 static
 void init_array(int m, int n,
 		DATA_TYPE A[M][N],
@@ -29,6 +33,8 @@ void init_array(int m, int n,
     for (j = 0; j < n; j++)
       R[i][j] = 0.0;
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int m, int n,
 		 DATA_TYPE A[M][N],
@@ -47,6 +53,10 @@ void print_array(int m, int n,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
+/* QR Decomposition with Modified Gram Schmidt:
+ http://www.inf.ethz.ch/personal/gander/ */
 static
 void kernel_gramschmidt(int m, int n,
 			DATA_TYPE A[M][N],
@@ -77,18 +87,26 @@ void kernel_gramschmidt(int m, int n,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int m = M;
   int n = N;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE A[M][N];
   volatile DATA_TYPE R[N][N];
   volatile DATA_TYPE Q[M][N];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_gramschmidt (m, n,
 		      A,
 		      R,
 		      Q);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(m, n, A, R, Q));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* jacobi-1d.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "jacobi-1d.h"
+/* Array initialization. */
 static
 void init_array (int n,
 		 DATA_TYPE POLYBENCH_1D(A,N,n),
@@ -25,6 +29,8 @@ void init_array (int n,
 	B[i] = ((DATA_TYPE) i+ 3) / n;
       }
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int n,
 		 DATA_TYPE POLYBENCH_1D(A,N,n))
@@ -36,6 +42,8 @@ void print_array(int n,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_jacobi_1d(int tsteps,
 			    int n,
@@ -55,14 +63,22 @@ void kernel_jacobi_1d(int tsteps,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int n = N;
   int tsteps = TSTEPS;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE A[N];
   volatile DATA_TYPE B[N];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_jacobi_1d(tsteps, n, A, B);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(n, A));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

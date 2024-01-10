@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* gesummv.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "gesummv.h"
+/* Array initialization. */
 static
 void init_array(int n,
 		DATA_TYPE *alpha,
@@ -33,6 +37,8 @@ void init_array(int n,
       }
     }
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int n,
 		 DATA_TYPE y[N])
@@ -43,6 +49,8 @@ void print_array(int n,
 
   }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_gesummv(int n,
 		    DATA_TYPE alpha,
@@ -70,7 +78,9 @@ void kernel_gesummv(int n,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int n = N;
+  /* Variable declaration/allocation. */
   DATA_TYPE alpha;
   DATA_TYPE beta;
   volatile DATA_TYPE A[N][N];
@@ -78,15 +88,21 @@ int main(int argc, char** argv)
   volatile DATA_TYPE tmp[N];
   volatile DATA_TYPE x[N];
   volatile DATA_TYPE y[N];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_gesummv (n, alpha, beta,
 		  A,
 		  B,
 		  tmp,
 		  x,
 		  y);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(n, y));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

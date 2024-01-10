@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* fdtd-2d.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "fdtd-2d.h"
+/* Array initialization. */
 static
 void init_array (int tmax,
 		 int nx,
@@ -33,6 +37,8 @@ void init_array (int tmax,
 	hz[i][j] = ((DATA_TYPE) i*(j+3)) / nx;
       }
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int nx,
 		 int ny,
@@ -57,6 +63,8 @@ void print_array(int nx,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_fdtd_2d(int tmax,
 		    int nx,
@@ -87,23 +95,31 @@ void kernel_fdtd_2d(int tmax,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int tmax = TMAX;
   int nx = NX;
   int ny = NY;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE ex[NX][NY];
   volatile DATA_TYPE ey[NX][NY];
   volatile DATA_TYPE hz[NX][NY];
   volatile DATA_TYPE _fict_[TMAX];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_fdtd_2d (tmax, nx, ny,
 		  ex,
 		  ey,
 		  hz,
 		  _fict_);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(nx, ny, ex,
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
 				    ey,
 				    hz));
+  /* Be clean. */
   return 0;
 }

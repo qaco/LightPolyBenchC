@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* gemm.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "gemm.h"
+/* Array initialization. */
 static
 void init_array(int ni, int nj, int nk,
 		DATA_TYPE *alpha,
@@ -34,6 +38,8 @@ void init_array(int ni, int nj, int nk,
     for (j = 0; j < nj; j++)
       B[i][j] = (DATA_TYPE) (i*(j+2) % nj) / nj;
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int ni, int nj,
 		 DATA_TYPE C[NI][NJ])
@@ -45,6 +51,8 @@ void print_array(int ni, int nj,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_gemm(int ni, int nj, int nk,
 		 DATA_TYPE alpha,
@@ -74,22 +82,30 @@ void kernel_gemm(int ni, int nj, int nk,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int ni = NI;
   int nj = NJ;
   int nk = NK;
+  /* Variable declaration/allocation. */
   DATA_TYPE alpha;
   DATA_TYPE beta;
   volatile DATA_TYPE C[NI][NJ];
   volatile DATA_TYPE A[NI][NK];
   volatile DATA_TYPE B[NK][NJ];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_gemm (ni, nj, nk,
 	       alpha, beta,
 	       C,
 	       A,
 	       B);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(ni, nj,  C));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

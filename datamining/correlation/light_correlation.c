@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* correlation.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "correlation.h"
+/* Array initialization. */
 static
 void init_array (int m,
 		 int n,
@@ -25,6 +29,8 @@ void init_array (int m,
     for (j = 0; j < M; j++)
       data[i][j] = (DATA_TYPE)(i*j)/M + i;
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int m,
 		 DATA_TYPE corr[M][M])
@@ -36,6 +42,8 @@ void print_array(int m,
 
     }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_correlation(int m, int n,
 			DATA_TYPE float_n,
@@ -61,8 +69,12 @@ void kernel_correlation(int m, int n,
         stddev[j] += (data[i][j] - mean[j]) * (data[i][j] - mean[j]);
       stddev[j] /= float_n;
       stddev[j] = SQRT_FUN(stddev[j]);
+      /* The following in an inelegant but usual way to handle
+         near-zero std. dev. values, which below would cause a zero-
+         divide. */
       stddev[j] = stddev[j] <= eps ? SCALAR_VAL(1.0) : stddev[j];
     }
+  /* Center and reduce the column vectors. */
   for (i = 0; i < _PB_N; i++)
     for (j = 0; j < _PB_M; j++)
       {
@@ -86,21 +98,29 @@ void kernel_correlation(int m, int n,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int n = N;
   int m = M;
+  /* Variable declaration/allocation. */
   DATA_TYPE float_n;
   volatile DATA_TYPE data[N][M];
   volatile DATA_TYPE corr[M][M];
   volatile DATA_TYPE mean[M];
   volatile DATA_TYPE stddev[M];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_correlation (m, n, float_n,
 		      data,
 		      corr,
 		      mean,
 		      stddev);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(m, corr));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

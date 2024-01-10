@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* cholesky.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "cholesky.h"
+/* Array initialization. */
 static
 void init_array(int n,
 		DATA_TYPE A[N][N])
@@ -27,6 +31,7 @@ void init_array(int n,
       }
       A[i][i] = 1;
     }
+  /* Make the matrix positive semi-definite. */
   int r,s,t;
   volatile DATA_TYPE B[N][N];
   for (r = 0; r < n; ++r)
@@ -40,6 +45,8 @@ void init_array(int n,
       for (s = 0; s < n; ++s)
 	A[r][s] = (B)[r][s];
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int n,
 		 DATA_TYPE A[N][N])
@@ -51,6 +58,8 @@ void print_array(int n,
 
   }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_cholesky(int n,
 		     DATA_TYPE A[N][N])
@@ -75,12 +84,20 @@ void kernel_cholesky(int n,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int n = N;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE A[N][N];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_cholesky (n, A);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(n, A));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }

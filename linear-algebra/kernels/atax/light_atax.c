@@ -7,12 +7,16 @@
  *
  * Web address: http://polybench.sourceforge.net
  */
+/* atax.c: this file is part of PolyBench/C */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+/* Include polybench common header. */
 #include <polybench.h>
+/* Include benchmark-specific header. */
 #include "atax.h"
+/* Array initialization. */
 static
 void init_array (int m, int n,
 		 DATA_TYPE A[M][N],
@@ -27,6 +31,8 @@ void init_array (int m, int n,
     for (j = 0; j < n; j++)
       A[i][j] = (DATA_TYPE) ((i+j) % n) / (5*m);
 }
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
 static
 void print_array(int n,
 		 DATA_TYPE y[N])
@@ -37,6 +43,8 @@ void print_array(int n,
 
   }
 }
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
 static
 void kernel_atax(int m, int n,
 		 DATA_TYPE A[M][N],
@@ -60,20 +68,28 @@ void kernel_atax(int m, int n,
 }
 int main(int argc, char** argv)
 {
+  /* Retrieve problem size. */
   int m = M;
   int n = N;
+  /* Variable declaration/allocation. */
   volatile DATA_TYPE A[M][N];
   volatile DATA_TYPE x[N];
   volatile DATA_TYPE y[N];
   volatile DATA_TYPE tmp[M];
+  /* Initialize array(s). */
+  /* Start timer. */
   polybench_start_instruments;
+  /* Run kernel. */
   kernel_atax (m, n,
 	       A,
 	       x,
 	       y,
 	       tmp);
+  /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-  polybench_prevent_dce(print_array(n, y));
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  /* Be clean. */
   return 0;
 }
