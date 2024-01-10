@@ -105,7 +105,10 @@ int main(int argc, char** argv)
   volatile DATA_TYPE v[N][N];
   volatile DATA_TYPE p[N][N];
   volatile DATA_TYPE q[N][N];
+  polybench_start_instruments;
   kernel_adi (tsteps, n, u, v, p, q);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(n, u));
   return 0;
 }

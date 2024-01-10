@@ -97,6 +97,7 @@ int main(int argc, char** argv)
   volatile DATA_TYPE C[NJ][NM];
   volatile DATA_TYPE D[NM][NL];
   volatile DATA_TYPE G[NI][NL];
+  polybench_start_instruments;
   kernel_3mm (ni, nj, nk, nl, nm,
 	      E,
 	      A,
@@ -105,6 +106,8 @@ int main(int argc, char** argv)
 	      C,
 	      D,
 	      G);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(ni, nl,  G));
   return 0;
 }

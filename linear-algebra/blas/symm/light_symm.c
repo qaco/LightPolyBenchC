@@ -87,11 +87,14 @@ int main(int argc, char** argv)
   volatile DATA_TYPE C[M][N];
   volatile DATA_TYPE A[M][M];
   volatile DATA_TYPE B[M][N];
+  polybench_start_instruments;
   kernel_symm (m, n,
 	       alpha, beta,
 	       C,
 	       A,
 	       B);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(m, n, C));
   return 0;
 }

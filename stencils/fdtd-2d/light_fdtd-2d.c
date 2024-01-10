@@ -94,11 +94,14 @@ int main(int argc, char** argv)
   volatile DATA_TYPE ey[NX][NY];
   volatile DATA_TYPE hz[NX][NY];
   volatile DATA_TYPE _fict_[TMAX];
+  polybench_start_instruments;
   kernel_fdtd_2d (tmax, nx, ny,
 		  ex,
 		  ey,
 		  hz,
 		  _fict_);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(nx, ny, ex,
 				    ey,
 				    hz));

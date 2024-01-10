@@ -73,10 +73,13 @@ int main(int argc, char** argv)
   volatile DATA_TYPE data[N][M];
   volatile DATA_TYPE cov[M][M];
   volatile DATA_TYPE mean[M];
+  polybench_start_instruments;
   kernel_covariance (m, n, float_n,
 		     data,
 		     cov,
 		     mean);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(m, cov));
   return 0;
 }

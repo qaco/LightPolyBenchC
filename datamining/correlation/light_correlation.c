@@ -93,11 +93,14 @@ int main(int argc, char** argv)
   volatile DATA_TYPE corr[M][M];
   volatile DATA_TYPE mean[M];
   volatile DATA_TYPE stddev[M];
+  polybench_start_instruments;
   kernel_correlation (m, n, float_n,
 		      data,
 		      corr,
 		      mean,
 		      stddev);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(m, corr));
   return 0;
 }

@@ -82,10 +82,13 @@ int main(int argc, char** argv)
   volatile DATA_TYPE A[M][N];
   volatile DATA_TYPE R[N][N];
   volatile DATA_TYPE Q[M][N];
+  polybench_start_instruments;
   kernel_gramschmidt (m, n,
 		      A,
 		      R,
 		      Q);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(m, n, A, R, Q));
   return 0;
 }

@@ -75,12 +75,15 @@ int main(int argc, char** argv)
   volatile DATA_TYPE q[N];
   volatile DATA_TYPE p[M];
   volatile DATA_TYPE r[N];
+  polybench_start_instruments;
   kernel_bicg (m, n,
 	       A,
 	       s,
 	       q,
 	       p,
 	       r);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(m, n, s, q));
   return 0;
 }

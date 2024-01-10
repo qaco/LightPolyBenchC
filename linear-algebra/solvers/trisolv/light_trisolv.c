@@ -61,7 +61,10 @@ int main(int argc, char** argv)
   volatile DATA_TYPE L[N][N];
   volatile DATA_TYPE x[N];
   volatile DATA_TYPE b[N];
+  polybench_start_instruments;
   kernel_trisolv (n, L, x, b);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(n, x));
   return 0;
 }

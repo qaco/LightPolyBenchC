@@ -78,12 +78,15 @@ int main(int argc, char** argv)
   volatile DATA_TYPE tmp[N];
   volatile DATA_TYPE x[N];
   volatile DATA_TYPE y[N];
+  polybench_start_instruments;
   kernel_gesummv (n, alpha, beta,
 		  A,
 		  B,
 		  tmp,
 		  x,
 		  y);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(n, y));
   return 0;
 }

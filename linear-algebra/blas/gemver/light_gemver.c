@@ -98,6 +98,7 @@ int main(int argc, char** argv)
   volatile DATA_TYPE x[N];
   volatile DATA_TYPE y[N];
   volatile DATA_TYPE z[N];
+  polybench_start_instruments;
   kernel_gemver (n, alpha, beta,
 		 A,
 		 u1,
@@ -108,6 +109,8 @@ int main(int argc, char** argv)
 		 x,
 		 y,
 		 z);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(n, w));
   return 0;
 }

@@ -74,7 +74,10 @@ int main(int argc, char** argv)
   int n = N;
   volatile base seq[N];
   volatile DATA_TYPE table[N][N];
+  polybench_start_instruments;
   kernel_nussinov (n, seq, table);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(n, table));
   return 0;
 }

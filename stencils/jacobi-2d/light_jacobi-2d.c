@@ -62,7 +62,10 @@ int main(int argc, char** argv)
   int tsteps = TSTEPS;
   volatile DATA_TYPE A[N][N];
   volatile DATA_TYPE B[N][N];
+  polybench_start_instruments;
   kernel_jacobi_2d(tsteps, n, A, B);
+  polybench_stop_instruments;
+  polybench_print_instruments;
   polybench_prevent_dce(print_array(n, A));
   return 0;
 }
