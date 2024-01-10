@@ -90,14 +90,17 @@ int main(int argc, char** argv)
   int tmax = TMAX;
   int nx = NX;
   int ny = NY;
-  DATA_TYPE ex[NX][NY];
-  DATA_TYPE ey[NX][NY];
-  DATA_TYPE hz[NX][NY];
-  DATA_TYPE _fict_[TMAX];
+  volatile DATA_TYPE ex[NX][NY];
+  volatile DATA_TYPE ey[NX][NY];
+  volatile DATA_TYPE hz[NX][NY];
+  volatile DATA_TYPE _fict_[TMAX];
   kernel_fdtd_2d (tmax, nx, ny,
 		  ex,
 		  ey,
 		  hz,
 		  _fict_);
+  polybench_prevent_dce(print_array(nx, ny, ex,
+				    ey,
+				    hz));
   return 0;
 }

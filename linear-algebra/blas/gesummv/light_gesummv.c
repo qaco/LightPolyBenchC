@@ -73,16 +73,17 @@ int main(int argc, char** argv)
   int n = N;
   DATA_TYPE alpha;
   DATA_TYPE beta;
-  DATA_TYPE A[N][N];
-  DATA_TYPE B[N][N];
-  DATA_TYPE tmp[N];
-  DATA_TYPE x[N];
-  DATA_TYPE y[N];
+  volatile DATA_TYPE A[N][N];
+  volatile DATA_TYPE B[N][N];
+  volatile DATA_TYPE tmp[N];
+  volatile DATA_TYPE x[N];
+  volatile DATA_TYPE y[N];
   kernel_gesummv (n, alpha, beta,
 		  A,
 		  B,
 		  tmp,
 		  x,
 		  y);
+  polybench_prevent_dce(print_array(n, y));
   return 0;
 }

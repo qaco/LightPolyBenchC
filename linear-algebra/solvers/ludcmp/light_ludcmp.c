@@ -38,7 +38,7 @@ void init_array (int n,
       A[i][i] = 1;
     }
   int r,s,t;
-  DATA_TYPE B[N][N];
+  volatile DATA_TYPE B[N][N];
   for (r = 0; r < n; ++r)
     for (s = 0; s < n; ++s)
       (B)[r][s] = 0;
@@ -103,14 +103,15 @@ void kernel_ludcmp(int n,
 int main(int argc, char** argv)
 {
   int n = N;
-  DATA_TYPE A[N][N];
-  DATA_TYPE b[N];
-  DATA_TYPE x[N];
-  DATA_TYPE y[N];
+  volatile DATA_TYPE A[N][N];
+  volatile DATA_TYPE b[N];
+  volatile DATA_TYPE x[N];
+  volatile DATA_TYPE y[N];
   kernel_ludcmp (n,
 		 A,
 		 b,
 		 x,
 		 y);
+  polybench_prevent_dce(print_array(n, x));
   return 0;
 }

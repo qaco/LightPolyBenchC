@@ -89,14 +89,15 @@ int main(int argc, char** argv)
   int n = N;
   int m = M;
   DATA_TYPE float_n;
-  DATA_TYPE data[N][M];
-  DATA_TYPE corr[M][M];
-  DATA_TYPE mean[M];
-  DATA_TYPE stddev[M];
+  volatile DATA_TYPE data[N][M];
+  volatile DATA_TYPE corr[M][M];
+  volatile DATA_TYPE mean[M];
+  volatile DATA_TYPE stddev[M];
   kernel_correlation (m, n, float_n,
 		      data,
 		      corr,
 		      mean,
 		      stddev);
+  polybench_prevent_dce(print_array(m, corr));
   return 0;
 }

@@ -52,7 +52,8 @@ int main(int argc, char** argv)
 {
   int n = N;
   int tsteps = TSTEPS;
-  DATA_TYPE A[N][N];
+  volatile DATA_TYPE A[N][N];
   kernel_seidel_2d (tsteps, n, A);
+  polybench_prevent_dce(print_array(n, A));
   return 0;
 }

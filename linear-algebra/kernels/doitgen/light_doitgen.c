@@ -63,12 +63,13 @@ int main(int argc, char** argv)
   int nr = NR;
   int nq = NQ;
   int np = NP;
-  DATA_TYPE A[NR][NQ][NP];
-  DATA_TYPE sum[NP];
-  DATA_TYPE C4[NP][NP];
+  volatile DATA_TYPE A[NR][NQ][NP];
+  volatile DATA_TYPE sum[NP];
+  volatile DATA_TYPE C4[NP][NP];
   kernel_doitgen (nr, nq, np,
 		  A,
 		  C4,
 		  sum);
+  polybench_prevent_dce(print_array(nr, nq, np,  A));
   return 0;
 }

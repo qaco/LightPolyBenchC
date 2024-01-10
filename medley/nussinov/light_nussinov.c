@@ -72,8 +72,9 @@ void kernel_nussinov(int n, base POLYBENCH_1D(seq,N,n),
 int main(int argc, char** argv)
 {
   int n = N;
-  base seq[N];
-  DATA_TYPE table[N][N];
+  volatile base seq[N];
+  volatile DATA_TYPE table[N][N];
   kernel_nussinov (n, seq, table);
+  polybench_prevent_dce(print_array(n, table));
   return 0;
 }

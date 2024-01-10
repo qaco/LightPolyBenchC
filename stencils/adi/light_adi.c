@@ -101,10 +101,11 @@ int main(int argc, char** argv)
 {
   int n = N;
   int tsteps = TSTEPS;
-  DATA_TYPE u[N][N];
-  DATA_TYPE v[N][N];
-  DATA_TYPE p[N][N];
-  DATA_TYPE q[N][N];
+  volatile DATA_TYPE u[N][N];
+  volatile DATA_TYPE v[N][N];
+  volatile DATA_TYPE p[N][N];
+  volatile DATA_TYPE q[N][N];
   kernel_adi (tsteps, n, u, v, p, q);
+  polybench_prevent_dce(print_array(n, u));
   return 0;
 }

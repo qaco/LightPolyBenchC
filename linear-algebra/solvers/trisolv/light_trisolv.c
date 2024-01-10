@@ -58,9 +58,10 @@ void kernel_trisolv(int n,
 int main(int argc, char** argv)
 {
   int n = N;
-  DATA_TYPE L[N][N];
-  DATA_TYPE x[N];
-  DATA_TYPE b[N];
+  volatile DATA_TYPE L[N][N];
+  volatile DATA_TYPE x[N];
+  volatile DATA_TYPE b[N];
   kernel_trisolv (n, L, x, b);
+  polybench_prevent_dce(print_array(n, x));
   return 0;
 }

@@ -70,12 +70,13 @@ int main(int argc, char** argv)
   int n = N;
   int m = M;
   DATA_TYPE float_n;
-  DATA_TYPE data[N][M];
-  DATA_TYPE cov[M][M];
-  DATA_TYPE mean[M];
+  volatile DATA_TYPE data[N][M];
+  volatile DATA_TYPE cov[M][M];
+  volatile DATA_TYPE mean[M];
   kernel_covariance (m, n, float_n,
 		     data,
 		     cov,
 		     mean);
+  polybench_prevent_dce(print_array(m, cov));
   return 0;
 }

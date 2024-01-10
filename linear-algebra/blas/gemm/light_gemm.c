@@ -79,13 +79,14 @@ int main(int argc, char** argv)
   int nk = NK;
   DATA_TYPE alpha;
   DATA_TYPE beta;
-  DATA_TYPE C[NI][NJ];
-  DATA_TYPE A[NI][NK];
-  DATA_TYPE B[NK][NJ];
+  volatile DATA_TYPE C[NI][NJ];
+  volatile DATA_TYPE A[NI][NK];
+  volatile DATA_TYPE B[NK][NJ];
   kernel_gemm (ni, nj, nk,
 	       alpha, beta,
 	       C,
 	       A,
 	       B);
+  polybench_prevent_dce(print_array(ni, nj,  C));
   return 0;
 }

@@ -57,8 +57,9 @@ int main(int argc, char** argv)
 {
   int n = N;
   int tsteps = TSTEPS;
-  DATA_TYPE A[N];
-  DATA_TYPE B[N];
+  volatile DATA_TYPE A[N];
+  volatile DATA_TYPE B[N];
   kernel_jacobi_1d(tsteps, n, A, B);
+  polybench_prevent_dce(print_array(n, A));
   return 0;
 }

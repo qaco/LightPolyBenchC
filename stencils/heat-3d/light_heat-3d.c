@@ -72,8 +72,9 @@ int main(int argc, char** argv)
 {
   int n = N;
   int tsteps = TSTEPS;
-  DATA_TYPE A[N][N][N];
-  DATA_TYPE B[N][N][N];
+  volatile DATA_TYPE A[N][N][N];
+  volatile DATA_TYPE B[N][N][N];
   kernel_heat_3d (tsteps, n, A, B);
+  polybench_prevent_dce(print_array(n, A));
   return 0;
 }

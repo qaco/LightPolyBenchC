@@ -72,8 +72,9 @@ int main(int argc, char** argv)
   int m = M;
   DATA_TYPE alpha;
   DATA_TYPE beta;
-  DATA_TYPE C[N][N];
-  DATA_TYPE A[N][M];
+  volatile DATA_TYPE C[N][N];
+  volatile DATA_TYPE A[N][M];
   kernel_syrk (n, m, alpha, beta, C, A);
+  polybench_prevent_dce(print_array(n, C));
   return 0;
 }

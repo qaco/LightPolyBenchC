@@ -54,7 +54,8 @@ void kernel_floyd_warshall(int n,
 int main(int argc, char** argv)
 {
   int n = N;
-  DATA_TYPE path[N][N];
+  volatile DATA_TYPE path[N][N];
   kernel_floyd_warshall (n, path);
+  polybench_prevent_dce(print_array(n, path));
   return 0;
 }

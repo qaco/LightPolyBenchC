@@ -86,11 +86,11 @@ int main(int argc, char** argv)
   int nl = NL;
   DATA_TYPE alpha;
   DATA_TYPE beta;
-  DATA_TYPE tmp[NI][NJ];
-  DATA_TYPE A[NI][NK];
-  DATA_TYPE B[NK][NJ];
-  DATA_TYPE C[NJ][NL];
-  DATA_TYPE D[NI][NL];
+  volatile DATA_TYPE tmp[NI][NJ];
+  volatile DATA_TYPE A[NI][NK];
+  volatile DATA_TYPE B[NK][NJ];
+  volatile DATA_TYPE C[NJ][NL];
+  volatile DATA_TYPE D[NI][NL];
   kernel_2mm (ni, nj, nk, nl,
 	      alpha, beta,
 	      tmp,
@@ -98,5 +98,6 @@ int main(int argc, char** argv)
 	      B,
 	      C,
 	      D);
+  polybench_prevent_dce(print_array(ni, nl,  D));
   return 0;
 }

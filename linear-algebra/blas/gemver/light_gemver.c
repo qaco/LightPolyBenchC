@@ -89,15 +89,15 @@ int main(int argc, char** argv)
   int n = N;
   DATA_TYPE alpha;
   DATA_TYPE beta;
-  DATA_TYPE A[N][N];
-  DATA_TYPE u1[N];
-  DATA_TYPE v1[N];
-  DATA_TYPE u2[N];
-  DATA_TYPE v2[N];
-  DATA_TYPE w[N];
-  DATA_TYPE x[N];
-  DATA_TYPE y[N];
-  DATA_TYPE z[N];
+  volatile DATA_TYPE A[N][N];
+  volatile DATA_TYPE u1[N];
+  volatile DATA_TYPE v1[N];
+  volatile DATA_TYPE u2[N];
+  volatile DATA_TYPE v2[N];
+  volatile DATA_TYPE w[N];
+  volatile DATA_TYPE x[N];
+  volatile DATA_TYPE y[N];
+  volatile DATA_TYPE z[N];
   kernel_gemver (n, alpha, beta,
 		 A,
 		 u1,
@@ -108,5 +108,6 @@ int main(int argc, char** argv)
 		 x,
 		 y,
 		 z);
+  polybench_prevent_dce(print_array(n, w));
   return 0;
 }

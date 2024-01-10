@@ -28,7 +28,7 @@ void init_array(int n,
       A[i][i] = 1;
     }
   int r,s,t;
-  DATA_TYPE B[N][N];
+  volatile DATA_TYPE B[N][N];
   for (r = 0; r < n; ++r)
     for (s = 0; s < n; ++s)
       (B)[r][s] = 0;
@@ -76,7 +76,8 @@ void kernel_cholesky(int n,
 int main(int argc, char** argv)
 {
   int n = N;
-  DATA_TYPE A[N][N];
+  volatile DATA_TYPE A[N][N];
   kernel_cholesky (n, A);
+  polybench_prevent_dce(print_array(n, A));
   return 0;
 }

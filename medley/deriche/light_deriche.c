@@ -121,10 +121,11 @@ int main(int argc, char** argv)
   int w = W;
   int h = H;
   DATA_TYPE alpha;
-  DATA_TYPE imgIn[W][H];
-  DATA_TYPE imgOut[W][H];
-  DATA_TYPE y1[W][H];
-  DATA_TYPE y2[W][H];
+  volatile DATA_TYPE imgIn[W][H];
+  volatile DATA_TYPE imgOut[W][H];
+  volatile DATA_TYPE y1[W][H];
+  volatile DATA_TYPE y2[W][H];
   kernel_deriche (w, h, alpha, imgIn, imgOut, y1, y2);
+  polybench_prevent_dce(print_array(w, h, imgOut));
   return 0;
 }

@@ -62,14 +62,15 @@ int main(int argc, char** argv)
 {
   int m = M;
   int n = N;
-  DATA_TYPE A[M][N];
-  DATA_TYPE x[N];
-  DATA_TYPE y[N];
-  DATA_TYPE tmp[M];
+  volatile DATA_TYPE A[M][N];
+  volatile DATA_TYPE x[N];
+  volatile DATA_TYPE y[N];
+  volatile DATA_TYPE tmp[M];
   kernel_atax (m, n,
 	       A,
 	       x,
 	       y,
 	       tmp);
+  polybench_prevent_dce(print_array(n, y));
   return 0;
 }

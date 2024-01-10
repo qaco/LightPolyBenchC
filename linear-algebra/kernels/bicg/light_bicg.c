@@ -70,16 +70,17 @@ int main(int argc, char** argv)
 {
   int n = N;
   int m = M;
-  DATA_TYPE A[N][M];
-  DATA_TYPE s[M];
-  DATA_TYPE q[N];
-  DATA_TYPE p[M];
-  DATA_TYPE r[N];
+  volatile DATA_TYPE A[N][M];
+  volatile DATA_TYPE s[M];
+  volatile DATA_TYPE q[N];
+  volatile DATA_TYPE p[M];
+  volatile DATA_TYPE r[N];
   kernel_bicg (m, n,
 	       A,
 	       s,
 	       q,
 	       p,
 	       r);
+  polybench_prevent_dce(print_array(m, n, s, q));
   return 0;
 }

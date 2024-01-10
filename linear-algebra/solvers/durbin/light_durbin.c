@@ -67,10 +67,11 @@ void kernel_durbin(int n,
 int main(int argc, char** argv)
 {
   int n = N;
-  DATA_TYPE r[N];
-  DATA_TYPE y[N];
+  volatile DATA_TYPE r[N];
+  volatile DATA_TYPE y[N];
   kernel_durbin (n,
 		 r,
 		 y);
+  polybench_prevent_dce(print_array(n, y));
   return 0;
 }

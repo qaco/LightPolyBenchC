@@ -68,16 +68,17 @@ void kernel_mvt(int n,
 int main(int argc, char** argv)
 {
   int n = N;
-  DATA_TYPE A[N][N];
-  DATA_TYPE x1[N];
-  DATA_TYPE x2[N];
-  DATA_TYPE y_1[N];
-  DATA_TYPE y_2[N];
+  volatile DATA_TYPE A[N][N];
+  volatile DATA_TYPE x1[N];
+  volatile DATA_TYPE x2[N];
+  volatile DATA_TYPE y_1[N];
+  volatile DATA_TYPE y_2[N];
   kernel_mvt (n,
 	      x1,
 	      x2,
 	      y_1,
 	      y_2,
 	      A);
+  polybench_prevent_dce(print_array(n, x1, x2));
   return 0;
 }

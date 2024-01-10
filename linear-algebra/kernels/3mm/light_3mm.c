@@ -90,13 +90,13 @@ int main(int argc, char** argv)
   int nk = NK;
   int nl = NL;
   int nm = NM;
-  DATA_TYPE E[NI][NJ];
-  DATA_TYPE A[NI][NK];
-  DATA_TYPE B[NK][NJ];
-  DATA_TYPE F[NJ][NL];
-  DATA_TYPE C[NJ][NM];
-  DATA_TYPE D[NM][NL];
-  DATA_TYPE G[NI][NL];
+  volatile DATA_TYPE E[NI][NJ];
+  volatile DATA_TYPE A[NI][NK];
+  volatile DATA_TYPE B[NK][NJ];
+  volatile DATA_TYPE F[NJ][NL];
+  volatile DATA_TYPE C[NJ][NM];
+  volatile DATA_TYPE D[NM][NL];
+  volatile DATA_TYPE G[NI][NL];
   kernel_3mm (ni, nj, nk, nl, nm,
 	      E,
 	      A,
@@ -105,5 +105,6 @@ int main(int argc, char** argv)
 	      C,
 	      D,
 	      G);
+  polybench_prevent_dce(print_array(ni, nl,  G));
   return 0;
 }
